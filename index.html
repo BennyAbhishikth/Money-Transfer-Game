@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Money Transfer</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #222;
+        color: #fff;
+    }
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    form {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #aaa;
+    }
+    input[type="text"], select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background-color: #444;
+        color: #fff;
+        font-size: 16px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    h2 {
+        margin-top: 0;
+        color: #fff;
+    }
+    #balances p {
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .balance-amount {
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    .token {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .token.a {
+        background-color: #ff3d00; /* Red for User A */
+    }
+    .token.b {
+        background-color: #2979ff; /* Blue for User B */
+    }
+    .token.c {
+        background-color: #00e676; /* Green for User C */
+    }
+    .user-balance {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .user-name {
+        margin-right: 20px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <form id="initialAmountForm">
+        <label for="initialAmountA">Benny's Amount</label>
+        <input type="text" id="initialAmountA" name="initialAmountA" placeholder="Enter Initial Amount for User A"><br>
+
+        <label for="initialAmountB">Shami's Amount</label>
+        <input type="text" id="initialAmountB" name="initialAmountB" placeholder="Enter Initial Amount for User B"><br>
+
+        <label for="initialAmountC">Mahi's Amount</label>
+        <input type="text" id="initialAmountC" name="initialAmountC" placeholder="Enter Initial Amount for User C"><br>
+
+        <button type="submit">Submit Initial Amounts</button>
+    </form>
+
+    <div id="transferSection" style="display: none;">
+        <form id="transferForm">
+            <label for="fromUser">From:</label>
+            <select id="fromUser" name="fromUser">
+                <option value="a">Benny</option>
+                <option value="b">Shami</option>
+                <option value="c">Mahi</option>
+                <option value="bank">Bank</option>
+            </select><br>
+
+            <label for="toUser">To:</label>
+            <select id="toUser" name="toUser">
+                <option value="a">Benny</option>
+                <option value="b">Shami</option>
+                <option value="c">Mahi</option>
+                <option value="bank">Bank</option>
+            </select><br>
+
+            <label for="amount">Amount:</label>
+            <input type="text" id="amount" name="amount"><br>
+
+            <button type="submit">Transfer</button>
+        </form>
+    </div>
+
+    <div id="balances" style="display: none;">
+        <h2>Balances</h2>
+        <div class="user-balance">
+            <span class="token a"></span>
+            <span class="user-name">Benny ==></span>
+            <span id="balanceA" class="balance-amount">0</span>
+        </div>
+        <div class="user-balance">
+            <span class="token b"></span>
+            <span class="user-name">Shami ==></span>
+            <span id="balanceB" class="balance-amount">0</span>
+        </div>
+        <div class="user-balance">
+            <span class="token c"></span>
+            <span class="user-name">Mahi ==></span>
+            <span id="balanceC" class="balance-amount">0</span>
+        </div>
+        <!-- <div class="user-balance">
+            <span class="user-name">Bank:</span>
+            <span class="balance-amount">Unlimited</span>
+        </div> -->
+    </div>
+</div>
+
+<script>
+    const balances = {
+        a: 0,
+        b: 0,
+        c: 0,
+        bank: Infinity
+    };
+
+    document.getElementById("initialAmountForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const initialAmountA = parseInt(document.getElementById("initialAmountA").value.trim());
+        const initialAmountB = parseInt(document.getElementById("initialAmountB").value.trim());
+        const initialAmountC = parseInt(document.getElementById("initialAmountC").value.trim());
+
+        if (isNaN(initialAmountA) || isNaN(initialAmountB) || isNaN(initialAmountC)) {
+            alert("Please enter valid initial amounts for all users.");
+            return;
+        }
+
+        balances.a = initialAmountA;
+        balances.b = initialAmountB;
+        balances.c = initialAmountC;
+
+        document.getElementById("initialAmountForm").style.display = "none";
+        document.getElementById("transferSection").style.display = "block";
+        document.getElementById("balances").style.display = "block";
+
+        document.getElementById("balanceA").textContent = balances.a;
+        document.getElementById("balanceB").textContent = balances.b;
+        document.getElementById("balanceC").textContent = balances.c;
+    });
+
+    document.getElementById("transferForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const fromUser = document.getElementById("fromUser").value;
+        const toUser = document.getElementById("toUser").value;
+        const amount = parseInt(document.getElementById("amount").value);
+
+        if (fromUser === toUser) {
+            alert("Cannot transfer money to the same user.");
+            return;
+        }
+
+        if (fromUser !== "bank" && amount > balances[fromUser]) {
+            alert("Insufficient balance.");
+            return;
+        }
+
+        if (fromUser !== "bank") {
+            balances[fromUser] -= amount;
+        }
+        balances[toUser] += amount;
+
+        document.getElementById("balanceA").textContent = balances.a;
+        document.getElementById("balanceB").textContent = balances.b;
+        document.getElementById("balanceC").textContent = balances.c;
+
+        alert("Transfer successful.");
+    });
+</script>
+
+</body>
+</html>
